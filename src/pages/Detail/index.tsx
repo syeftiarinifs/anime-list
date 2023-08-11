@@ -33,7 +33,7 @@ const Detail = () => {
       <Header />
       <div className={styContainer}>
         <div className="sty-image">
-          <img src={animeDetail.images.jpg.large_image_url} />
+          <img alt="anime" src={animeDetail.images.jpg.large_image_url} />
         </div>
 
         <div className='sty-title-wrapper'>

@@ -10,6 +10,12 @@ export const styContainer= css`
     gap: 1rem;
   }
 
+  .sty-anime-loader-container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0px, 1fr));
+    gap: 1rem;
+  }
+
   .sty-pagination {
     display: flex;
     justify-content: flex-end;
