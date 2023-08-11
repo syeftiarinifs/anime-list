@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 
 import Pagination from '@mui/material/Pagination';
 import TextField from '@mui/material/TextField';
@@ -12,7 +14,11 @@ import { styContainer } from './styles';
 const  LIMIT_PERPAGE = 12;
 
 const Home = () => {
-  const [page, setPage] = useState(1);
+  const navigate = useNavigate()
+  const { search } = useLocation();
+  const query = queryString.parse(search);
+
+  const [page, setPage] = useState(Number(query.page || 1));
   const [animeList, setAnimeList] = useState([])
   const [lastVisiblePage, setLastVisiblePage] = useState(0);
   const [keyword, setKeyword] = useState('');
@@ -21,6 +27,7 @@ const Home = () => {
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
+    navigate(`?page=${value}`)
   };
 
   const handleChangeKeyWord = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

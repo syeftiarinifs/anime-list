@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Typography from '@mui/material/Typography';
@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import { ANIME_LIST_STORAGE_KEY } from '../../constants';
 import { saveData, getData } from '../../helpers/LocalStorage';
 import Header from '../../components/Header';
+import DetailLoader from './DetailLoader';
 import { styContainer } from './styles';
 import { AnimeDetailProps } from './types';
 import { DEFAULT_VALUE_ANIME } from './constants'
@@ -18,6 +19,7 @@ interface AnimeProps {
 
 const Detail = () => {
   const [animeDetail, setAnimeDetail] = useState<AnimeDetailProps>(DEFAULT_VALUE_ANIME);
+  const [loading, setLoading] = useState(false);
 
   const currFavorit = useMemo(() => {
     return getData(ANIME_LIST_STORAGE_KEY) || [];
@@ -42,16 +44,28 @@ const Detail = () => {
     window.location.reload();
   }
 
-  useEffect(() => {
+  const fetchAnimeDetail = useCallback(() => {
+    setLoading(true)
     fetch(`https://api.jikan.moe/v4/anime/${id}/full`)
       .then((response) => response.json())
       .then((data) => {
-        setAnimeDetail(data.data);
+        if(data?.data){
+          setAnimeDetail(data.data);
+        } else {
+          console.error(data.message)
+        }
       })
       .catch((err) => {
-        console.error(err.message);
+        console.error(err.message)
+      })
+      .finally(() => {
+        setLoading(false)
       });
-  }, [id]);
+  }, [id])
+
+  useEffect(() => {
+    fetchAnimeDetail();
+  }, [fetchAnimeDetail]);
 
   useEffect(() => {
     const tempFavorite = Boolean(currFavorit?.find((item: AnimeProps) => item.mal_id === Number(id)))
@@ -62,32 +76,35 @@ const Detail = () => {
     <>
       <Header />
       <div className={styContainer}>
-        <div className="sty-image">
-          <img alt="anime" src={animeDetail?.images?.jpg?.large_image_url} />
-        </div>
+        { loading ? <DetailLoader /> :
+            <>
+              <div className="sty-image">
+                <img alt="anime" src={animeDetail?.images?.jpg?.large_image_url} />
+              </div>
 
-        <div className='sty-title-wrapper'>
-          <Typography gutterBottom variant="h5" component="div">
-            {animeDetail?.title}
-          </Typography>
-          { isFavorit ? 
-              <Button variant="contained" onClick={handleRemoveFavorite}>Remove from Favorites</Button>
-            :
-              <Button variant="contained" onClick={handleAddFavorite}>Add to Favorites</Button>
-          }
-          
-        </div>
+              <div className='sty-title-wrapper'>
+                <Typography gutterBottom variant="h5" component="div">
+                  {animeDetail?.title}
+                </Typography>
+                { isFavorit ? 
+                    <Button variant="contained" onClick={handleRemoveFavorite}>Remove from Favorites</Button>
+                  :
+                    <Button variant="contained" onClick={handleAddFavorite}>Add to Favorites</Button>
+                }
+                
+              </div>
 
-        <div className='sty-chip-wrapper'>
-          {animeDetail?.genres?.map((genre, index) => (
-            <Chip key={index} label={genre.name} variant="outlined" />
-          ))}
-        </div>
-        
-        <Typography className='sty-anime-description' variant="body2" color="text.secondary">
-            {animeDetail?.synopsis}
-          </Typography>
-
+              <div className='sty-chip-wrapper'>
+                {animeDetail?.genres?.map((genre, index) => (
+                  <Chip key={index} label={genre.name} variant="outlined" />
+                ))}
+              </div>
+              
+              <Typography className='sty-anime-description' variant="body2" color="text.secondary">
+                {animeDetail?.synopsis}
+              </Typography>
+          </>
+        }
       </div>
     </>
   )
