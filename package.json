@@ -1,6 +1,7 @@
 {
   "name": "my-app",
   "version": "0.1.0",
+  "homepage": "https://syeftiarinifs.github.io/anime-list/",
   "private": true,
   "dependencies": {
     "@emotion/css": "^11.11.2",
