@@ -8,12 +8,21 @@ export const styContainer= css`
     display: grid;
     grid-template-columns: repeat(12, minmax(0px, 1fr));
     gap: 1rem;
+
+    @media screen and (max-width: 720px) {
+      grid-template-columns: repeat(1, minmax(0px, 1fr));
+    }
   }
 
   .sty-anime-loader-container {
     display: grid;
     grid-template-columns: repeat(3, minmax(0px, 1fr));
     gap: 1rem;
+
+
+    @media screen and (max-width: 720px) {
+      grid-template-columns: repeat(1, minmax(0px, 1fr));
+    }
   }
 
   .sty-pagination {
